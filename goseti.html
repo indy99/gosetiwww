@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="author" content="indy99">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+      <style>
+        body {
+            background-color:#333333;
+            color:white
+        }
+        .divshadow {box-shadow: 2px 2px 5px 5px #888888}
+        div {border-radius: 8px; }
+        span {border-radius: 5px; }
+        .footer {
+           position: fixed;
+           left: 0;
+           bottom: 0;
+           width: 100%;
+           background-color: white;
+           color: red;
+           text-align: left;
+           padding:10px;
+           border-radius: 0
+        }
+      </style>
+
+      <script type="text/javascript">
+
+        function send_ajax_ch() {
+            $.get( "http://89.107.57.198:10001/getkeys/", function(data) {
+              //console.log( "log req: "+data );
+                try {
+                    var obj=JSON.parse(data);
+                    makeTable(obj)
+                } catch(e){
+                    //gid("status_error"+idiv).innerHTML="Err js:"+e;
+                    console.log( "log req Err js:"+e);
+             }
+            })
+              //.done(function() {})
+              .fail(function() {console.log( "log request error!" );});
+              //.always(function() {});
+        }
+
+        function gid(x){
+            return document.getElementById(x);
+        }
+
+        function makeTable(obj){
+          var str="";
+          var cl="";
+          var i=0;
+          gid("btncalc").innerHTML=msg_notfound;
+          for (i=0; i<obj.length; i++) {
+            if (obj[i].Found) {
+              cl="yellowgreen";
+              gid("btncalc").innerHTML=msg_found;
+              gid("btncalc").className="btn btn-success";
+              gid("btncalc").disabled=true;
+            } else cl="";
+            str+=`<div class="row" style="background-color:`+cl+`">
+              <div class="col-xs-6">
+                `+obj[i].Priv+`
+              </div>
+              <div class="col-xs-6">
+                <a href="https://www.blockchain.com/btc/address/`+obj[i].Pub+`" target="blank">`+obj[i].Pub+`</a>
+              </div>
+          </div>`;
+        }
+        gid("div_table").innerHTML=str;
+      }
+
+      function calc(){
+        gid("btncalc").className="btn btn-danger";
+        gid("btncalc").innerHTML=msg_checking;
+        send_ajax_ch();
+      }
+
+      function init(){
+        send_ajax_ch();
+      }
+
+      var msg_found="Congratulations you find it :))";
+      var msg_checking="Checking new keys please wait ...";
+      var msg_notfound="None, Try Again ...";
+
+    </script>
+
+  </head>
+  <body onload="init()">
+
+      <div class="container-fluid divshadow" style="background-color:white; color: red; border-radius: 0px; padding: 5px;">
+          <div style="text-align: center">
+              <span style="font-size: 23px; padding: 0 20px 0 20px">Find Satoshi's Bitcoins</span><br>
+              <span style="color:black; font-size:12px">This api makes random OFFLINE CHECKING.<br>On each request, scans first 80.000 address of bitcoin wallet</span><br>
+              <span style="color:black; font-size:12px">It is not easy but maybe you are lucky</span>
+          </div>
+      </div>
+
+      <div class="container" style="margin-top:20px">
+
+      <div class="row" id="div_err" style="color:white; background-color:#ff0000; border:solid thick #aa0000; padding:10px; margin:5px; display:none"></div>
+      <div class="row" style="padding:5px; margin-bottom:15px;background-color:cornflowerblue;color:white"><div class="col-xs-6">Scanned Private Keys</div><div class="col-xs-6">Bitcoin Address</div></div>
+      <div class="row divshadow" id="div_table" style="font-family:monospace; padding:10px; background-color:black"></div>
+      <br>
+      <button class="btn btn-danger" id="btncalc" onclick="calc()">Checking new keys please wait ...</button>
+
+      </div>
+      <br>
+      <div class="footer">
+        by <a href="https://github.com/indy99" target="_blank">indy99</a>, <a href="mailto:nnet.server@gmail.com">Contact for api</a>
+        </footer>
+  </body>
+</html>
